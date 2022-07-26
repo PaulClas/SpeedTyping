@@ -1,7 +1,7 @@
 const RANDOM_QUOTE_API_URL= 'http:///api.quotable.io/random'
 const quoteDisplayElement = document.getElementById('quoteDisplay')
 const quoteInputElement= document.getElementById('quoteInput')
-const wordsperMinuteElement = document.getElementById('wpm')
+const wordsperMinuteElement = document.getElementById('wordsPerMinutelesson')
 const timerElement = document.getElementById('timer')
 
 document.addEventListener('click', first)
@@ -83,6 +83,7 @@ function startTimer(){
     startTime = new Date()
     ID = setInterval(() =>{
         timer.innerText = getTimerTime()
+        console.log(timer.innerText)
     },1000)
     
 }
