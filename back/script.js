@@ -2,7 +2,9 @@ const RANDOM_QUOTE_API_URL= 'http:///api.quotable.io/random'
 const quoteDisplayElement = document.getElementById('quoteDisplay')
 const quoteInputElement= document.getElementById('quoteInput')
 const wordsperMinuteElement = document.getElementById('wordsPerMinutelesson')
+const accuraccyPerLesson= document.getElementById('accuracylesson')
 const timerElement = document.getElementById('timer')
+const wpmAverage = document.getElementById('wpmall')
 
 document.addEventListener('click', first)
 
@@ -21,7 +23,9 @@ function second(){
     document.onclick=first
     document.addEventListener('click', first)
 }
-
+let nb_incorrect = 0
+let accuraccy = 0
+localStorage.setItem("wpmAvg","")
 quoteInputElement.addEventListener('input',()=>{
     const arrayQuote = quoteDisplayElement.querySelectorAll('span')
     const arrayValue = quoteInputElement.value.split('')
@@ -39,20 +43,38 @@ quoteInputElement.addEventListener('input',()=>{
         } else {
             characterSpan.classList.remove('correct')
             characterSpan.classList.add('incorrect')
+            nb_incorrect+=1
             correct = false
         }
     })
     if (correct){
+        accuraccyPerLesson.innerHTML=roundedToFixed((100-(nb_incorrect/arrayQuote.length*100)),1)
         stopTime=getTimerTime()
-        wordsperMinuteElement.innerHTML=getWordsPerMinute(stopTime)
+        var wpmlesson= new Number(getWordsPerMinute(stopTime))
+        console.log(wpmlesson)
+        wordsperMinuteElement.innerHTML=wpmlesson
         renderNewQuote()
+        var existing = new Number(localStorage.getItem("wpmAvg"))
+        var wpmAvg = existing ? new Number((existing + wpmlesson)/2) : wpmlesson
+        console.log(wpmAvg)
+        localStorage.setItem("wpmAvg",wpmAvg)
+        wpmAverage.innerHTML=localStorage.getItem('wpmAvg')
+        nb_incorrect = 0
+        accuraccy = 0
+
     }
 })
+
+function roundedToFixed(input, digits){
+    var rounded = Math.pow(10, digits);
+    return (Math.round(input * rounded) / rounded).toFixed(digits);
+  }
 
 function getRandomQuote() {
     return fetch(RANDOM_QUOTE_API_URL)
         .then(response => response.json())
-        .then(data => data.content + " "+data.author+".")
+        .then(data => data.content+data.length)
+
 }
 
 function getWordsPerQuote(quote){
@@ -83,7 +105,6 @@ function startTimer(){
     startTime = new Date()
     ID = setInterval(() =>{
         timer.innerText = getTimerTime()
-        console.log(timer.innerText)
     },1000)
     
 }
