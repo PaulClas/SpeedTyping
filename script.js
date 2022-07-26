@@ -1,13 +1,14 @@
 const RANDOM_QUOTE_API_URL= 'http:///api.quotable.io/random'
 const quoteDisplayElement = document.getElementById('quoteDisplay')
 const quoteInputElement= document.getElementById('quoteInput')
+const wordsperMinuteElement = document.getElementById('wpm')
 const timerElement = document.getElementById('timer')
 
 document.addEventListener('click', first)
 
-let paused
-let stoptime
 function first(e){
+    if(quoteInputElement === document.activeElement)
+        return
     e.stopImmediatePropagation();
     this.removeEventListener("click", first);
     timer.innerText=getTimerTime()
@@ -41,7 +42,11 @@ quoteInputElement.addEventListener('input',()=>{
             correct = false
         }
     })
-    if (correct) renderNewQuote()
+    if (correct){
+        stopTime=getTimerTime()
+        wordsperMinuteElement.innerHTML=getWordsPerMinute(stopTime)
+        renderNewQuote()
+    }
 })
 
 function getRandomQuote() {
@@ -50,9 +55,18 @@ function getRandomQuote() {
         .then(data => data.content)
 }
 
-const elem = document.getElementById('quoteInput')
+function getWordsPerQuote(quote){
+    return quote.trim().split(/\s+/).length
+}
+
+function getWordsPerMinute(stopTime){
+    let wpm = (getWordsPerQuote(quote)/stopTime)*60
+    return wpm
+}
+
+let quote
 async function renderNewQuote(){
-    let quote = await getRandomQuote() + "\n"
+    quote = await getRandomQuote() + "\n"
     quoteDisplayElement.innerHTML= ''
     quote.split('').forEach(character => {
         const characterSpan = document.createElement('span')
@@ -72,7 +86,6 @@ function startTimer(){
     },1000)
     
 }
-
 
 function getTimerTime(){
     return Math.floor((new Date() - startTime)/1000)
