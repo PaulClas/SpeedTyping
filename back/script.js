@@ -8,8 +8,13 @@ const wpmAverage = document.getElementById('wpmall')
 const accuracyall = document.getElementById('accuracyall')
 const timeall = document.getElementById('timeall')
 const progressBar = document.getElementById('progressBar')
+const az=document.getElementById("az")
 const lessonTime = 1800
 
+/* const AZ = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+const AZCAP = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+const NUMBERS = [1,2,3,4,5,6,7,8,9]
+ */
 document.addEventListener('click', first)
 
 function first(e){
@@ -140,7 +145,19 @@ function getRandomQuote() {
     return fetch(RANDOM_QUOTE_API_URL)
         .then(response => response.json())
         .then(data => data.content+' '+data.author+'.')
+}
 
+function quoteLetterCount(quote){
+    nbRows=document.getElementById("character").rows.length
+    array=document.getElementById("character")
+    for( let r=0; r<nbRows;r++){
+        for (let i =0; i<quote.length;i++){
+            for (let y=0; y<array.rows[r].cells.length; y++){
+                if (quote.includes(array.rows[r].cells[y].innerHTML))
+                array.rows[r].cells[y].style.backgroundColor='lightgreen'
+            }
+        }
+    }
 }
 
 function getWordsPerQuote(quote){
@@ -161,6 +178,7 @@ async function renderNewQuote(){
         characterSpan.innerText = character
         quoteDisplayElement.appendChild(characterSpan)
     })
+    quoteLetterCount(quote)
     quoteInputElement.value=null
     startTimer()
 }
