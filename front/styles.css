@@ -23,3 +23,7 @@ body, .quote-input {
 }
 
 td { table-layout: fixed; }
+
+td.yes{
+    background-color: green;
+}
