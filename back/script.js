@@ -9,29 +9,13 @@ const accuracyall = document.getElementById('accuracyall')
 const timeall = document.getElementById('timeall')
 const progressBar = document.getElementById('progressBar')
 const az=document.getElementById("az")
-const lessonTime = 1800
+const lessonTime = 300
 
 /* const AZ = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 const AZCAP = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 const NUMBERS = [1,2,3,4,5,6,7,8,9]
  */
-document.addEventListener('click', first)
-
-function first(e){
-    if(quoteInputElement === document.activeElement)
-        return
-    e.stopImmediatePropagation();
-    this.removeEventListener("click", first);
-    timer.innerText=getTimerTime()
-    clearInterval(ID)
-    document.onclick=second;
-}
-function second(){
-    renderNewQuote()
-    clearInterval(ID)
-    document.onclick=first
-    document.addEventListener('click', first)
-}
+let ID
 let nb_incorrect = 0
 let accuraccy = 0
 localStorage.setItem("wpmAvg","")
@@ -65,10 +49,9 @@ quoteInputElement.addEventListener('input',()=>{
         setAverage("wpmAvg",wpmlesson,wpmAverage)
         setAverage("accuracyall",lessonAccuracy,accuracyall)
         time=setTotalTimeSpent(stopTime)
-        renderNewQuote()
+        stopClock()
         nb_incorrect = 0
         accuraccy = 0
-
     }
 })
 
@@ -91,9 +74,7 @@ function setAverage(key,value,dom){
         var temp = new Number (localStorage.getItem(key))
         var avg = new Number((temp + value)/2)
         localStorage.setItem(key,avg)
-        console.log(localStorage.getItem(key))
     }
-    console.log(roundedToFixed(localStorage.getItem(key),1))
     dom.innerHTML=roundedToFixed(localStorage.getItem(key),1)
 }
 
@@ -180,21 +161,92 @@ async function renderNewQuote(){
     })
     quoteLetterCount(quote)
     quoteInputElement.value=null
-    startTimer()
+    startClock()
 }
 let startTime
 
 function startTimer(){
     timerElement.innerText = 0
+    quoteInputElement.value=null
     startTime = new Date()
-    ID = setInterval(() =>{
+    ID= setInterval(() =>{
         timer.innerText = getTimerTime()
     },1000)
-    
 }
 
 function getTimerTime(){
     return Math.floor((new Date() - startTime)/1000)
+}
+
+let intervalID
+var isPaused=false
+let timePaused=0
+let time=0
+
+const start = document.getElementById("startClock")
+const pause= document.getElementById("pauseClock")
+const stopC = document.getElementById("stopClock")
+const resume = document.getElementById("resumeClock")
+const clock = document.getElementById("clock-timer")
+
+function startClock(){
+    console.log(document.activeElement)
+    if(document.activElement === start.activeElement){
+        start.disabled =true
+        pause.disabled =false
+        resume.disabled =true
+        stopC.disabled =false
+    }
+    startTime = new Date()
+    intervalID= setInterval(()=>{
+        if(!isPaused){
+            console.log('getTimerTime is ' + getTimerTime())
+            let timer=getTimerTime()
+            time=timer+timePaused
+            console.log('time is '+ time)
+            clock.innerText =time
+        }
+    },1000)
+}
+
+function pauseClock(){
+    if(document.activElement === pause.activeElement){
+        start.disabled =true
+        pause.disabled =true
+        resume.disabled =false
+        stopC.disabled=false
+    }
+    isPaused=true
+    timePaused=time
+    console.log('pause is '  + timePaused)
+    clearInterval(intervalID)
+
+}
+
+function stopClock(){
+    if(document.activElement === stopC.activeElement){
+        start.disabled =false
+        pause.disabled =true
+        resume.disabled =true
+        stopC.disabled =true
+    }
+    isPaused=false
+    clearInterval(intervalID)
+    time=0
+    timePaused=0
+    clock.innerText =time
+    renderNewQuote()
+}
+
+function resumeClock(){
+    if(document.activElement === resume.activeElement){
+        start.disabled =true
+        pause.disabled =false
+        resume.disabled =true
+        stopC.disabled=false
+    }
+    isPaused=false
+    startClock()
 }
 
 renderNewQuote()
