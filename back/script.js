@@ -161,7 +161,6 @@ async function renderNewQuote(){
     })
     quoteLetterCount(quote)
     quoteInputElement.value=null
-    startClock()
 }
 let startTime
 
@@ -188,10 +187,53 @@ const pause= document.getElementById("pauseClock")
 const stopC = document.getElementById("stopClock")
 const resume = document.getElementById("resumeClock")
 const clock = document.getElementById("clock-timer")
+const timerControls=document.getElementById("timerControls")
+const input=document.getElementById("input")
 
+let state=0
+document.addEventListener('click',()=>{
+    /* switch(state){
+        case 0:
+            //arrival
+            //start
+            quoteInputElement.classList.remove('d-none')
+            quoteInputElement.classList.add('d-block')
+            timerControls.classList.remove('d-block')
+            timerControls.classList.add('d-none')
+            quoteInputElement.focus()
+            break;
+        case 1:
+            //
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+    } */
+
+
+    console.log(isPaused)
+    quoteInputElement.focus()
+    if(quoteInputElement.classList.contains('d-none') && isPaused===false){
+        quoteInputElement.classList.remove('d-none')
+        quoteInputElement.classList.add('d-block')
+        timerControls.classList.remove('d-block')
+        timerControls.classList.add('d-none')
+        quoteInputElement.focus()
+    }else if(isPaused===true){
+        quoteInputElement.classList.remove('d-none')
+        quoteInputElement.classList.add('d-block')
+        timerControls.classList.remove('d-block')
+        timerControls.classList.add('d-none')
+    }else{
+        quoteInputElement.classList.remove('d-block')
+        quoteInputElement.classList.add('d-none')
+        timerControls.classList.remove('d-none')
+        timerControls.classList.add('d-block')
+    }
+})
 function startClock(){
-    console.log(document.activeElement)
-    if(document.activElement === start.activeElement){
+    if(document.activeElement === start){
         start.disabled =true
         pause.disabled =false
         resume.disabled =true
@@ -200,17 +242,17 @@ function startClock(){
     startTime = new Date()
     intervalID= setInterval(()=>{
         if(!isPaused){
-            console.log('getTimerTime is ' + getTimerTime())
             let timer=getTimerTime()
             time=timer+timePaused
-            console.log('time is '+ time)
             clock.innerText =time
+        }else{
+            resumeClock(0)
         }
     },1000)
 }
 
 function pauseClock(){
-    if(document.activElement === pause.activeElement){
+    if(document.activeElement === pause){
         start.disabled =true
         pause.disabled =true
         resume.disabled =false
@@ -218,13 +260,12 @@ function pauseClock(){
     }
     isPaused=true
     timePaused=time
-    console.log('pause is '  + timePaused)
     clearInterval(intervalID)
 
 }
 
 function stopClock(){
-    if(document.activElement === stopC.activeElement){
+    if(document.activeElement === stopC){
         start.disabled =false
         pause.disabled =true
         resume.disabled =true
@@ -239,7 +280,7 @@ function stopClock(){
 }
 
 function resumeClock(){
-    if(document.activElement === resume.activeElement){
+    if(document.activeElement === resume){
         start.disabled =true
         pause.disabled =false
         resume.disabled =true

@@ -169,17 +169,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="timerControls">
-                        <button type="button" class="btn btn-success start" id="startClock" onclick="startClock()">Start</button>
-                        <button type="button" class="btn btn-secondary  pause" id="pauseClock" onclick="pauseClock()"disabled>Pause</button>
-                        <button type="button" class="btn btn-success resume" id="resumeClock" onclick="resumeClock()"disabled>Resume</button>
-                        <button type="button" class="btn btn-danger stop" id="stopClock"onclick="stopClock()"disabled>Clear</button>
-                    </div>
                     <div class="p-2 row container border">Touch Typing Panel
                         <div class=" p-2 row ">
                             <div class ="p-2 container quote-display" id="quoteDisplay"></div>
                         </div>
-                        <textarea class="p-2 row container quote-input" id="quoteInput" onclick="startClock()" autofocus></textarea>
+                        <div class="Input" id="input">
+                            <div class="timerControls d-block" id="timerControls">
+                                <button type="button" class="btn btn-success start" id="startClock" onclick="startClock()">Start</button>
+                                <button type="button" class="btn btn-secondary  pause" id="pauseClock" onclick="pauseClock()"disabled>Pause</button>
+                                <button type="button" class="btn btn-success resume" id="resumeClock" onclick="resumeClock()"disabled>Resume</button>
+                                <button type="button" class="btn btn-danger stop" id="stopClock"onclick="stopClock()"disabled>Clear</button>
+                            </div>
+                            <textarea class="p-2 row container quote-input d-none" id="quoteInput" autofocus></textarea>
+                        </div>
+                            
                     </div>
             </div>
         </div>

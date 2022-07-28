@@ -4,7 +4,7 @@ body, .quote-input {
 
 .quote-input {
     border: 2px solid darkgoldenrod;
-    height: 8rem;
+    height: 10rem;
     font-size: 1rem;
 
 }
@@ -26,4 +26,21 @@ td { table-layout: fixed; }
 
 td.yes{
     background-color: green;
+}
+
+.input{
+    position:relative;
+}
+
+.input .timerControls{
+    display:block;
+}
+
+.input textarea{
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    height: 200px;
+    width: 200px;
+    background-color: rgba(255,255,255,0.5);
 }
