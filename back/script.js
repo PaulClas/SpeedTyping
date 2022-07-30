@@ -192,39 +192,34 @@ const input=document.getElementById("input")
 
 let state=0
 document.addEventListener('click',()=>{
-    /* switch(state){
+    console.log(state)
+    switch(state){
         case 0:
-            //arrival
-            //start
-            quoteInputElement.classList.remove('d-none')
-            quoteInputElement.classList.add('d-block')
-            timerControls.classList.remove('d-block')
-            timerControls.classList.add('d-none')
-            quoteInputElement.focus()
+            startClock()
             break;
         case 1:
-            //
+            isPaused=true;
+            pauseClock()
             break;
         case 2:
-            break;
-        case 3:
-            break;
-    } */
+            isPaused=false;
+            resumeClock()
+    }
 
 
     console.log(isPaused)
     quoteInputElement.focus()
-    if(quoteInputElement.classList.contains('d-none') && isPaused===false){
+    if(quoteInputElement.classList.contains('d-none')){
         quoteInputElement.classList.remove('d-none')
         quoteInputElement.classList.add('d-block')
         timerControls.classList.remove('d-block')
         timerControls.classList.add('d-none')
         quoteInputElement.focus()
     }else if(isPaused===true){
-        quoteInputElement.classList.remove('d-none')
-        quoteInputElement.classList.add('d-block')
-        timerControls.classList.remove('d-block')
-        timerControls.classList.add('d-none')
+        quoteInputElement.classList.add('d-none')
+        quoteInputElement.classList.remove('d-block')
+        timerControls.classList.add('d-block')
+        timerControls.classList.remove('d-none')
     }else{
         quoteInputElement.classList.remove('d-block')
         quoteInputElement.classList.add('d-none')
@@ -246,13 +241,14 @@ function startClock(){
             time=timer+timePaused
             clock.innerText =time
         }else{
-            resumeClock(0)
+            resumeClock()
         }
     },1000)
+    state=1
 }
 
 function pauseClock(){
-    if(document.activeElement === pause){
+    if(document.activeElement === pause || isPaused===true){
         start.disabled =true
         pause.disabled =true
         resume.disabled =false
@@ -261,7 +257,7 @@ function pauseClock(){
     isPaused=true
     timePaused=time
     clearInterval(intervalID)
-
+    state=2
 }
 
 function stopClock(){
@@ -277,6 +273,7 @@ function stopClock(){
     timePaused=0
     clock.innerText =time
     renderNewQuote()
+    state = 0
 }
 
 function resumeClock(){
@@ -287,6 +284,7 @@ function resumeClock(){
         stopC.disabled=false
     }
     isPaused=false
+    state=0
     startClock()
 }
 
