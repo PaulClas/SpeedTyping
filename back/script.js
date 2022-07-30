@@ -161,6 +161,7 @@ async function renderNewQuote(){
     })
     quoteLetterCount(quote)
     quoteInputElement.value=null
+    startClock()
 }
 let startTime
 
@@ -192,68 +193,35 @@ const input=document.getElementById("input")
 
 let state=0
 document.addEventListener('click',()=>{
-    console.log(state)
     switch(state){
         case 0:
             startClock()
             break;
         case 1:
-            isPaused=true;
+            isPaused=true
             pauseClock()
             break;
         case 2:
             isPaused=false;
             resumeClock()
     }
-
-
-    console.log(isPaused)
-    quoteInputElement.focus()
-    if(quoteInputElement.classList.contains('d-none')){
-        quoteInputElement.classList.remove('d-none')
-        quoteInputElement.classList.add('d-block')
-        timerControls.classList.remove('d-block')
-        timerControls.classList.add('d-none')
-        quoteInputElement.focus()
-    }else if(isPaused===true){
-        quoteInputElement.classList.add('d-none')
-        quoteInputElement.classList.remove('d-block')
-        timerControls.classList.add('d-block')
-        timerControls.classList.remove('d-none')
-    }else{
-        quoteInputElement.classList.remove('d-block')
-        quoteInputElement.classList.add('d-none')
-        timerControls.classList.remove('d-none')
-        timerControls.classList.add('d-block')
-    }
 })
 function startClock(){
-    if(document.activeElement === start){
-        start.disabled =true
-        pause.disabled =false
-        resume.disabled =true
-        stopC.disabled =false
-    }
+    isPaused=false;
+    quoteInputElement.focus()
     startTime = new Date()
     intervalID= setInterval(()=>{
         if(!isPaused){
             let timer=getTimerTime()
             time=timer+timePaused
             clock.innerText =time
-        }else{
-            resumeClock()
         }
     },1000)
     state=1
 }
 
 function pauseClock(){
-    if(document.activeElement === pause || isPaused===true){
-        start.disabled =true
-        pause.disabled =true
-        resume.disabled =false
-        stopC.disabled=false
-    }
+    quoteInputElement.blur()
     isPaused=true
     timePaused=time
     clearInterval(intervalID)
@@ -261,12 +229,6 @@ function pauseClock(){
 }
 
 function stopClock(){
-    if(document.activeElement === stopC){
-        start.disabled =false
-        pause.disabled =true
-        resume.disabled =true
-        stopC.disabled =true
-    }
     isPaused=false
     clearInterval(intervalID)
     time=0
@@ -277,12 +239,6 @@ function stopClock(){
 }
 
 function resumeClock(){
-    if(document.activeElement === resume){
-        start.disabled =true
-        pause.disabled =false
-        resume.disabled =true
-        stopC.disabled=false
-    }
     isPaused=false
     state=0
     startClock()
