@@ -45,7 +45,7 @@
                                 <p class="accuracylesson" id="accuracylesson"></p>
                             </div>
                             <div class="col-2 container " id="">Timer:
-                                <p class="timer" id="timer"></p>
+                                <p class="clock-timer" id="clock-timer"></p>
                             </div>
                         </div>
                     </div>
@@ -162,18 +162,28 @@
                                 </tbody>
                             </table>
                         </div>
-                        <p>Daily Objective Completion: 30min</p>
+                        <p>Daily Objective Completion: 5min</p>
                         <div class="pb-4">
                             <div class="progress" style="height: 20px;">
                                 <div class="progress-bar" role="progressbar" style="width: 1%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="p-2 row container border">Touch Typing Panel
-                        <div class=" p-2 row ">
+                    <div class="p-2 row ">
+                        <div class="col">Touch Typing Panel</div>
+                        <div class="col-auto text-right" id="timerControls">
+                            <button type="button" class="btn btn-danger stop" id="stopClock"onclick="stopClock()">Reset</button>
+                        </div>
+                        <div class="p-2 row ">
                             <div class ="p-2 container quote-display" id="quoteDisplay"></div>
                         </div>
-                        <textarea class="p-2 row container quote-input" id="quoteInput"  autofocus></textarea>
+                        <div class="row Input container.fluid" id="input">
+                            <textarea class="p-2 row quote-input d-block" id="quoteInput" autofocus></textarea>
+                            <div class="d-none" id="activate">
+                                <h3>Click to activate</h3>
+                            </div>
+                        </div>
+                            
                     </div>
             </div>
         </div>

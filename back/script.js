@@ -9,29 +9,13 @@ const accuracyall = document.getElementById('accuracyall')
 const timeall = document.getElementById('timeall')
 const progressBar = document.getElementById('progressBar')
 const az=document.getElementById("az")
-const lessonTime = 1800
+const lessonTime = 300
 
 /* const AZ = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 const AZCAP = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 const NUMBERS = [1,2,3,4,5,6,7,8,9]
  */
-document.addEventListener('click', first)
-
-function first(e){
-    if(quoteInputElement === document.activeElement)
-        return
-    e.stopImmediatePropagation();
-    this.removeEventListener("click", first);
-    timer.innerText=getTimerTime()
-    clearInterval(ID)
-    document.onclick=second;
-}
-function second(){
-    renderNewQuote()
-    clearInterval(ID)
-    document.onclick=first
-    document.addEventListener('click', first)
-}
+let ID
 let nb_incorrect = 0
 let accuraccy = 0
 localStorage.setItem("wpmAvg","")
@@ -65,10 +49,9 @@ quoteInputElement.addEventListener('input',()=>{
         setAverage("wpmAvg",wpmlesson,wpmAverage)
         setAverage("accuracyall",lessonAccuracy,accuracyall)
         time=setTotalTimeSpent(stopTime)
-        renderNewQuote()
+        stopClock()
         nb_incorrect = 0
         accuraccy = 0
-
     }
 })
 
@@ -91,9 +74,7 @@ function setAverage(key,value,dom){
         var temp = new Number (localStorage.getItem(key))
         var avg = new Number((temp + value)/2)
         localStorage.setItem(key,avg)
-        console.log(localStorage.getItem(key))
     }
-    console.log(roundedToFixed(localStorage.getItem(key),1))
     dom.innerHTML=roundedToFixed(localStorage.getItem(key),1)
 }
 
@@ -180,21 +161,96 @@ async function renderNewQuote(){
     })
     quoteLetterCount(quote)
     quoteInputElement.value=null
-    startTimer()
+    startClock()
 }
 let startTime
 
 function startTimer(){
     timerElement.innerText = 0
+    quoteInputElement.value=null
     startTime = new Date()
-    ID = setInterval(() =>{
+    ID= setInterval(() =>{
         timer.innerText = getTimerTime()
     },1000)
-    
 }
 
 function getTimerTime(){
     return Math.floor((new Date() - startTime)/1000)
+}
+
+let intervalID
+var isPaused=false
+let timePaused=0
+let time=0
+
+const start = document.getElementById("startClock")
+const pause= document.getElementById("pauseClock")
+const stopC = document.getElementById("stopClock")
+const resume = document.getElementById("resumeClock")
+const clock = document.getElementById("clock-timer")
+const timerControls=document.getElementById("timerControls")
+const input=document.getElementById("input")
+
+quoteInputElement.addEventListener("blur",()=>{
+    document.getElementById("activate").classList.remove('d-none')
+})
+
+quoteInputElement.addEventListener("focus",()=>{
+    document.getElementById("activate").classList.add('d-none')
+})
+
+
+let state=0
+document.addEventListener('click',()=>{
+    switch(state){
+        case 0:
+            startClock()
+            break;
+        case 1:
+            isPaused=true
+            pauseClock()
+            break;
+        case 2:
+            isPaused=false;
+            resumeClock()
+    }
+})
+function startClock(){
+    isPaused=false;
+    quoteInputElement.focus()
+    startTime = new Date()
+    intervalID= setInterval(()=>{
+        if(!isPaused){
+            let timer=getTimerTime()
+            time=timer+timePaused
+            clock.innerText =time
+        }
+    },1000)
+    state=1
+}
+
+function pauseClock(){
+    quoteInputElement.blur()
+    isPaused=true
+    timePaused=time
+    clearInterval(intervalID)
+    state=2
+}
+
+function stopClock(){
+    isPaused=false
+    clearInterval(intervalID)
+    time=0
+    timePaused=0
+    clock.innerText =time
+    renderNewQuote()
+    state = 0
+}
+
+function resumeClock(){
+    isPaused=false
+    state=0
+    startClock()
 }
 
 renderNewQuote()
