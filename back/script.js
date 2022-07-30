@@ -191,6 +191,15 @@ const clock = document.getElementById("clock-timer")
 const timerControls=document.getElementById("timerControls")
 const input=document.getElementById("input")
 
+quoteInputElement.addEventListener("blur",()=>{
+    document.getElementById("activate").classList.remove('d-none')
+})
+
+quoteInputElement.addEventListener("focus",()=>{
+    document.getElementById("activate").classList.add('d-none')
+})
+
+
 let state=0
 document.addEventListener('click',()=>{
     switch(state){

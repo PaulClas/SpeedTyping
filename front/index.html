@@ -169,16 +169,19 @@
                             </div>
                         </div>
                     </div>
-                    <div class="p-2 row border">
+                    <div class="p-2 row ">
                         <div class="col">Touch Typing Panel</div>
                         <div class="col-auto text-right" id="timerControls">
                             <button type="button" class="btn btn-danger stop" id="stopClock"onclick="stopClock()">Reset</button>
                         </div>
-                        <div class=" p-2 row ">
+                        <div class="p-2 row ">
                             <div class ="p-2 container quote-display" id="quoteDisplay"></div>
                         </div>
-                        <div class="Input" id="input">
-                            <textarea class="p-2 row container quote-input d-block" id="quoteInput" autofocus></textarea>
+                        <div class="row Input container.fluid" id="input">
+                            <textarea class="p-2 row quote-input d-block" id="quoteInput" autofocus></textarea>
+                            <div class="d-none" id="activate">
+                                <h3>Click to activate</h3>
+                            </div>
                         </div>
                             
                     </div>
