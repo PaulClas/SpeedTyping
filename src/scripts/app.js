@@ -10,6 +10,8 @@ const timeall = document.getElementById('timeall')
 const progressBar = document.getElementById('progressBar')
 const az=document.getElementById("az")
 const lessonTime = 300
+const overlayInput= document.getElementById("overlayTyping")
+const overlayQuote= document.getElementById("quoteDisplayOverlay")
 
 /* const AZ = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 const AZCAP = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
@@ -21,6 +23,7 @@ let accuraccy = 0
 localStorage.setItem("wpmAvg","")
 localStorage.setItem("accuracyall","")
 localStorage.setItem("totalTime","")
+
 quoteInputElement.addEventListener('input',()=>{
     const arrayQuote = quoteDisplayElement.querySelectorAll('span')
     const arrayValue = quoteInputElement.value.split('')
@@ -125,8 +128,43 @@ function roundedToFixed(input, digits){
 function getRandomQuote() {
     return fetch(RANDOM_QUOTE_API_URL)
         .then(response => response.json())
-        .then(data => data.content+' '+data.author+'.')
+        .then(data => addSpaceIndicator(data.content+' '+data.author+'.'))
 }
+
+function addSpaceIndicator(quote){
+    return quote.replace(/\s/g,'\u23B5 ')
+}
+
+function insertTextAtCursor(text) {
+    var sel, range, textNode;
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            range = sel.getRangeAt(0).cloneRange();
+            range.deleteContents();
+            textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+
+            // Move caret to the end of the newly inserted text node
+            range.setStart(textNode, textNode.length);
+            range.setEnd(textNode, textNode.length);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    } else if (document.selection && document.selection.createRange) {
+        range = document.selection.createRange();
+        range.pasteHTML(text);
+    }
+}
+
+
+overlayInput.addEventListener("keydown",function(evt) {
+    console.log(evt.code)
+    if (evt.code==='Space') {
+        insertTextAtCursor("\u23B5");
+        }
+});
+
 
 function quoteLetterCount(quote){
     nbRows=document.getElementById("character").rows.length
@@ -163,6 +201,19 @@ async function renderNewQuote(){
     quoteInputElement.value=null
     startClock()
 }
+
+async function renderNewQuoteOverlay(){
+    quote= await getRandomQuote() + "\n"
+    overlayQuote.innerHTML= ''
+    quote.split('').forEach(character => {
+        const characterSpan = document.createElement('span')
+        characterSpan.innerText = character
+        overlayQuote.appendChild(characterSpan)
+    })
+    quoteLetterCount(quote)
+    startClock()
+}
+
 let startTime
 
 function startTimer(){
@@ -272,3 +323,4 @@ document.getElementById("typingView").addEventListener("change", (event)=> {
 });
 
 renderNewQuote()
+renderNewQuoteOverlay()

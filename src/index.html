@@ -174,8 +174,8 @@
                             </div>
                             <div class="col-2 text-end">
                                 <select class="form-select" id="typingView" aria-label="Default select example">
-                                    <option value="1">Original View</option>
                                     <option value="2">Overlay KeyBr View</option>
+                                    <option value="1">Original View</option>
                                     <option value="3">Side by Side View</option>
                                 </select>
                                 </div>
@@ -183,7 +183,7 @@
                                 <button type="button" class="btn btn-danger stop" id="stopClock"onclick="stopClock()">Reset</button>
                             </div>
                         </div>
-                        <div class="p-2 row" id="originalView" style="display:block">
+                        <div class="p-2 row" id="originalView" style="display:none">
                             <div class="p-2 row ">
                                 <div class ="p-2 container quote-display" id="quoteDisplay"></div>
                             </div>
@@ -194,10 +194,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="p-2 row" id="overlay" style="display:none">
+                        <div class="p-2 row" id="overlay" style="display:block">
                             <p>Overlay</p>
+                            <div class="p-2 row">
+                                <div class="overlayingBox container">
+                                    <div class="box container.fluid" id="quoteDisplayOverlay">
+                                    </div>
+                                    <div contenteditable="true" class="p-2 row box stack-top overlayTyping d-block container.fluid" id="overlayTyping"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-2 row" id="sideBySide" style="display:none">
+                        <div class="p-2 row container" id="sideBySide" style="display:none">
                             <p>Side by Side</p>
                         </div>
                     </div>
