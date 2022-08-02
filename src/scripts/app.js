@@ -193,6 +193,7 @@ const input=document.getElementById("input")
 
 quoteInputElement.addEventListener("blur",()=>{
         document.getElementById("activate").classList.remove('d-none')
+        pauseClock()
 })
 
 quoteInputElement.addEventListener("focus",()=>{
@@ -200,7 +201,7 @@ quoteInputElement.addEventListener("focus",()=>{
 })
 
 let state=0
-document.addEventListener('click',()=>{
+quoteInputElement.addEventListener('click',()=>{
     switch(state){
         case 0:
             startClock()
@@ -251,5 +252,23 @@ function resumeClock(){
     state=0
     startClock()
 }
+
+document.getElementById("typingView").addEventListener("change", (event)=> {
+    const opt= event.target.value
+    console.log(opt)
+    if (opt=="1") {
+        document.getElementById("originalView").style.display="block"
+        document.getElementById("overlay").style.display="none"
+        document.getElementById("sideBySide").style.display="none"
+    }else if (opt== "2") {
+        document.getElementById("originalView").style.display="none"
+        document.getElementById("overlay").style.display="block"
+        document.getElementById("sideBySide").style.display="none"
+    }else if (opt== "3") {
+        document.getElementById("originalView").style.display="none"
+        document.getElementById("overlay").style.display="none"
+        document.getElementById("sideBySide").style.display="block"
+    }
+});
 
 renderNewQuote()
