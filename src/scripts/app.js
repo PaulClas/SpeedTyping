@@ -24,9 +24,76 @@ localStorage.setItem("wpmAvg","")
 localStorage.setItem("accuracyall","")
 localStorage.setItem("totalTime","")
 
+function getCaretCharacterOffsetWithin(element) {
+    var caretOffset = 0;
+    var doc = element.ownerDocument || element.document;
+    var win = doc.defaultView || doc.parentWindow;
+    var sel;
+    if (typeof win.getSelection != "undefined") {
+        sel = win.getSelection();
+        if (sel.rangeCount > 0) {
+            var range = win.getSelection().getRangeAt(0);
+            var preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(element);
+            preCaretRange.setEnd(range.endContainer, range.endOffset);
+            caretOffset = preCaretRange.toString().length;
+        }
+    } else if ( (sel = doc.selection) && sel.type != "Control") {
+        var textRange = sel.createRange();
+        var preCaretTextRange = doc.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
+
+function moveCaret(win, charCount) {
+    var sel, range;
+    if (win.getSelection) {
+        sel = win.getSelection();
+        if (sel.rangeCount > 0) {
+            var textNode = sel.focusNode;
+            var newOffset = sel.focusOffset + charCount;
+            sel.collapse(textNode, Math.min(textNode.length, newOffset));
+        }
+    } else if ( (sel === document.getSelection()) ) {
+        if (sel.type != "Control") {
+            range = sel.createRange();
+            range.move("character", charCount);
+            range.select();
+        }
+    }
+}
+
+
+overlayInput.addEventListener('input',()=>{
+    console.log("yes")
+    const arrayOverlay= overlayQuote.querySelectorAll('span')
+    const arrayInput= overlayInput.innerText.split('')
+    let correct = true
+    arrayOverlay.forEach((characterSpan,index)=>{
+        const character = arrayInput[index]
+        if (character == null){
+            characterSpan.classList.remove('correct')
+            characterSpan.classList.remove('incorrect')
+            correct = false
+        }
+        else if(character===characterSpan.innerText)
+            characterSpan.classList.add('correct')
+        else{
+            characterSpan.classList.remove('correct')
+            characterSpan.classList.add('incorrect')
+            
+            
+        }
+    })
+})
+
 quoteInputElement.addEventListener('input',()=>{
     const arrayQuote = quoteDisplayElement.querySelectorAll('span')
     const arrayValue = quoteInputElement.value.split('')
+    console.log(quoteInputElement.value)
     let correct = true
     arrayQuote.forEach((characterSpan,index)=>{
         const character = arrayValue[index]
@@ -132,7 +199,11 @@ function getRandomQuote() {
 }
 
 function addSpaceIndicator(quote){
-    return quote.replace(/\s/g,'\u23B5 ')
+    if(document.getElementById("overlay").style.display==="block")
+        return quote.replace(/\s/g,' \u23B5 ')
+    else{
+        return quote
+    }
 }
 
 function insertTextAtCursor(text) {
@@ -159,9 +230,8 @@ function insertTextAtCursor(text) {
 
 
 overlayInput.addEventListener("keydown",function(evt) {
-    console.log(evt.code)
     if (evt.code==='Space') {
-        insertTextAtCursor("\u23B5");
+        insertTextAtCursor(" \u23B5");
         }
 });
 
@@ -306,7 +376,6 @@ function resumeClock(){
 
 document.getElementById("typingView").addEventListener("change", (event)=> {
     const opt= event.target.value
-    console.log(opt)
     if (opt=="1") {
         document.getElementById("originalView").style.display="block"
         document.getElementById("overlay").style.display="none"
