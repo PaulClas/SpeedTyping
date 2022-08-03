@@ -23,55 +23,14 @@ let accuraccy = 0
 localStorage.setItem("wpmAvg","")
 localStorage.setItem("accuracyall","")
 localStorage.setItem("totalTime","")
+var error
+var errorPos
 
-function getCaretCharacterOffsetWithin(element) {
-    var caretOffset = 0;
-    var doc = element.ownerDocument || element.document;
-    var win = doc.defaultView || doc.parentWindow;
-    var sel;
-    if (typeof win.getSelection != "undefined") {
-        sel = win.getSelection();
-        if (sel.rangeCount > 0) {
-            var range = win.getSelection().getRangeAt(0);
-            var preCaretRange = range.cloneRange();
-            preCaretRange.selectNodeContents(element);
-            preCaretRange.setEnd(range.endContainer, range.endOffset);
-            caretOffset = preCaretRange.toString().length;
-        }
-    } else if ( (sel = doc.selection) && sel.type != "Control") {
-        var textRange = sel.createRange();
-        var preCaretTextRange = doc.body.createTextRange();
-        preCaretTextRange.moveToElementText(element);
-        preCaretTextRange.setEndPoint("EndToEnd", textRange);
-        caretOffset = preCaretTextRange.text.length;
-    }
-    return caretOffset;
-}
-
-function moveCaret(win, charCount) {
-    var sel, range;
-    if (win.getSelection) {
-        sel = win.getSelection();
-        if (sel.rangeCount > 0) {
-            var textNode = sel.focusNode;
-            var newOffset = sel.focusOffset + charCount;
-            sel.collapse(textNode, Math.min(textNode.length, newOffset));
-        }
-    } else if ( (sel === document.getSelection()) ) {
-        if (sel.type != "Control") {
-            range = sel.createRange();
-            range.move("character", charCount);
-            range.select();
-        }
-    }
-}
-
-
-overlayInput.addEventListener('input',()=>{
-    console.log("yes")
+overlayInput.addEventListener('input',function(e){
     const arrayOverlay= overlayQuote.querySelectorAll('span')
     const arrayInput= overlayInput.innerText.split('')
-    let correct = true
+    let correct=true
+    var nbChar
     arrayOverlay.forEach((characterSpan,index)=>{
         const character = arrayInput[index]
         if (character == null){
@@ -79,21 +38,35 @@ overlayInput.addEventListener('input',()=>{
             characterSpan.classList.remove('incorrect')
             correct = false
         }
-        else if(character===characterSpan.innerText)
-            characterSpan.classList.add('correct')
-        else{
-            characterSpan.classList.remove('correct')
-            characterSpan.classList.add('incorrect')
-            
-            
+        else if(character===characterSpan.innerText){
+            characterSpan.classList.add('correct')}
+        if(error){
+            const errorChar = document.getElementById('n'+errorPos)
+            errorChar.classList.add("incorrect")
+            errorChar.classList.remove('correct')
+            correct=false
+
         }
+        error = false
+        nbChar=Math.max(index)    
     })
+    console.log(nbChar)
+    if (document.getElementById("n"+nbChar).classList.contains('incorrect') || document.getElementById("n"+nbChar).classList.contains('correct')){
+        stopTime=getTimerTime()
+        var wpmlesson=wpmSetLessonSpeed(stopTime)
+        var lessonAccuracy=setLessonAccuracy(nb_incorrect,arrayOverlay)
+        setAverage("wpmAvg",wpmlesson,wpmAverage)
+        setAverage("accuracyall",lessonAccuracy,accuracyall)
+        time=setTotalTimeSpent(stopTime)
+        stopClock()
+        nb_incorrect = 0
+        accuraccy = 0
+    }
 })
 
 quoteInputElement.addEventListener('input',()=>{
     const arrayQuote = quoteDisplayElement.querySelectorAll('span')
     const arrayValue = quoteInputElement.value.split('')
-    console.log(quoteInputElement.value)
     let correct = true
     arrayQuote.forEach((characterSpan,index)=>{
         const character = arrayValue[index]
@@ -106,7 +79,6 @@ quoteInputElement.addEventListener('input',()=>{
             characterSpan.classList.add('correct')
             characterSpan.classList.remove('incorrect')
         } else {
-            characterSpan.classList.remove('correct')
             characterSpan.classList.add('incorrect')
             nb_incorrect+=1
             correct = false
@@ -200,7 +172,7 @@ function getRandomQuote() {
 
 function addSpaceIndicator(quote){
     if(document.getElementById("overlay").style.display==="block")
-        return quote.replace(/\s/g,' \u23B5 ')
+        return quote.replace(/\s/g,'\u23B5')
     else{
         return quote
     }
@@ -212,9 +184,9 @@ function insertTextAtCursor(text) {
         sel = window.getSelection();
         if (sel.getRangeAt && sel.rangeCount) {
             range = sel.getRangeAt(0).cloneRange();
-            range.deleteContents();
-            textNode = document.createTextNode(text);
-            range.insertNode(textNode);
+            range.deleteContents()
+            textNode = document.createTextNode('\u23B5');
+            range.insertNode(textNode)
 
             // Move caret to the end of the newly inserted text node
             range.setStart(textNode, textNode.length);
@@ -223,16 +195,26 @@ function insertTextAtCursor(text) {
             sel.addRange(range);
         }
     } else if (document.selection && document.selection.createRange) {
-        range = document.selection.createRange();
-        range.pasteHTML(text);
+        document.selection.createRange().text=text
     }
 }
 
-
 overlayInput.addEventListener("keydown",function(evt) {
-    if (evt.code==='Space') {
-        insertTextAtCursor(" \u23B5");
+    let length =overlayInput.innerText.length
+    if (evt.key != "Shift"){
+        if (evt.code==='Space') {
+            evt.preventDefault()
+            if(overlayQuote.innerText.charAt(length)==='\u23B5')
+                insertTextAtCursor('\u23B5');
+            }
+        else if(evt.key!=overlayQuote.innerText.charAt(length)){
+            evt.preventDefault()
+            error=true
+            errorPos=length+1
         }
+    }
+
+
 });
 
 
@@ -275,12 +257,18 @@ async function renderNewQuote(){
 async function renderNewQuoteOverlay(){
     quote= await getRandomQuote() + "\n"
     overlayQuote.innerHTML= ''
+    overlayInput.innerHTML=''
+    let count=0
     quote.split('').forEach(character => {
+        count+=1
         const characterSpan = document.createElement('span')
+        characterSpan.setAttribute('id',"n"+count)
         characterSpan.innerText = character
         overlayQuote.appendChild(characterSpan)
     })
     quoteLetterCount(quote)
+    overlayInput.value=null
+    overlayQuote.value=null
     startClock()
 }
 
@@ -365,6 +353,7 @@ function stopClock(){
     timePaused=0
     clock.innerText =time
     renderNewQuote()
+    renderNewQuoteOverlay()
     state = 0
 }
 
